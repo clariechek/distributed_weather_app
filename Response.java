@@ -126,4 +126,11 @@ public class Response {
             LogUtil.write("Error sending response: " + e.getMessage());
         }
     }
+
+    /*
+     * Returns headers of response
+     */
+    public ArrayList<String> getHeaders() {
+        return this.headers;
+    }
 }

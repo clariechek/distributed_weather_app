@@ -10,6 +10,9 @@ public class RequestInformation {
     private String lamportTimestamp;
     private String processId;
 
+    /*
+     * Constructor for RequestInformation.
+     */
     public RequestInformation(String fullRequest, Socket socket, String requestType, String requestStartLine, String contentServerId, String lamportTimestamp, String processId) {
         this.fullRequest = fullRequest;
         this.socket = socket;

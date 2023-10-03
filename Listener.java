@@ -1,18 +1,21 @@
 
+import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class Listener {
     private static final Listener listener = new Listener();
-    private static BlockingQueue<RequestInformation> requestQueue = new ArrayBlockingQueue<RequestInformation>(50);
-    // private static Queue<RequestInformation> requestQueue = new PriorityQueue<RequestInformation>(50);
+    private static BlockingQueue<RequestInformation> requestQueue = new ArrayBlockingQueue<RequestInformation>(100);
     
+    /*
+     * Returns Listener instance
+     */
     public static Listener getListener() {
         return listener;
     }
 
     /*
-     * Adds a new request to the queue.
+     * Checks request type and calls addRequest() method.
      */
     public void addRequestToQueue(RequestInformation newRequest) {
         try {
@@ -66,15 +69,21 @@ public class Listener {
             // If request queue is empty, add request to queue.
             requestQueue.add(request);
         } else {
-            newQueue = new ArrayBlockingQueue<RequestInformation>(50);
+            newQueue = new ArrayBlockingQueue<RequestInformation>(100);
 
-            // If request queue is not empty, compare lamport timestamp of request with lamport timestamp of requests in queue.
-            while (!requestQueue.isEmpty()) {
+            // If request queue is not empty, order requests.
+            if (!requestQueue.isEmpty()) {
                 RequestInformation currentRequest = request;
-                for (RequestInformation r : requestQueue) {
+                Iterator iteratorValues = Listener.getListener().getRequestQueue().iterator();
+  
+                while (iteratorValues.hasNext()) {
+                    RequestInformation r = (RequestInformation) iteratorValues.next();
+                    
+                    // Request with smaller lamport timestamp should be first in queue.
                     if (Integer.parseInt(r.getLamportTimestamp()) < Integer.parseInt(currentRequest.getLamportTimestamp())) {
                         newQueue.add(r);
                     } else if (r.getLamportTimestamp() == currentRequest.getLamportTimestamp()) {
+                        // If lamport timestamps are the same, request with smaller process id should be first in queue.
                         if (Integer.parseInt(r.getProcessId()) < Integer.parseInt(currentRequest.getProcessId())) {
                             newQueue.add(r);
                         } else {
@@ -82,13 +91,30 @@ public class Listener {
                             currentRequest = r;
                         }
                     } else {
-                        newQueue.add(currentRequest);
+                        newQueue.offer(currentRequest);
                         currentRequest = r;
                     }
                 }
+                newQueue.add(currentRequest);
             }
             requestQueue.clear();
             requestQueue = newQueue;
         }
     }
-}
+
+    /*
+     * Returns the request queue.
+     */
+    public BlockingQueue<RequestInformation> getRequestQueue() {
+        return requestQueue;
+    }
+
+    /*
+     * Clears the request queue.
+     */
+    public void clearRequestQueue() {
+        if (requestQueue != null) {
+            requestQueue.clear();
+        }
+    }
+ }

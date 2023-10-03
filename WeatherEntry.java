@@ -20,26 +20,6 @@ public class WeatherEntry {
     private Long wind_spd_kmh;
     private Long wind_spd_kt;
 
-    // WeatherEntry(String id, String name, String state, String time_zone, Double lat, Double lon, String local_date_time, String local_date_time_full, Double air_temp, Double apparent_t, String cloud, Double dewpt, Double press, Long rel_hum, String wind_dir, Long wind_spd_kmh, Long wind_spd_kt) {
-    //     this.id = id;
-    //     this.name = name;
-    //     this.state = state;
-    //     this.time_zone = time_zone;
-    //     this.lat = lat;
-    //     this.lon = lon;
-    //     this.local_date_time = local_date_time;
-    //     this.local_date_time_full = local_date_time_full;
-    //     this.air_temp = air_temp;
-    //     this.apparent_t = apparent_t;
-    //     this.cloud = cloud;
-    //     this.dewpt = dewpt;
-    //     this.press = press;
-    //     this.rel_hum = rel_hum;
-    //     this.wind_dir = wind_dir;
-    //     this.wind_spd_kmh = wind_spd_kmh;
-    //     this.wind_spd_kt = wind_spd_kt;
-    // }
-
     public String setId(String id) {
         this.id = id;
         return id;
