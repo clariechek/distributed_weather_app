@@ -1,9 +1,3 @@
-# #Directory for compiled classes
-# BIN = ./bin/
-
-# # Directory for source files
-# SRC = ./src/*
-
 FLAGS = -g -cp .:java-json.jar:DataUtil.java:LogUtil.java:RequestInformation.java:LamportClock.java:Response.java:Listener.java:Handler.java:WeatherEntry.java
 
 COMPILE = javac $(FLAGS)
