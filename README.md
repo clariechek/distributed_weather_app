@@ -21,9 +21,11 @@ The aggregation server checks if the request is a PUT or GET request.
 - If it is not a PUT or GET request, the aggregation server returns 400 Bad Request.
 
 Each time the aggregation server receives a request, it increments its lamport clock time by 1 using the tick() method in LamportClock. Then it checks the lamport time of the request and updates its lamport timestamp to max(aggregation_server_timestamp, request_timestamp) + 1. The lamport information is then saved to the LAMPORT_AGGREGATION_SERVER.txt file.
+
 Then it calls the Listener to add the request to the RequestQueue. The Listener checks the request's lamport timestamp and process id to order them accordingly. Requests with the smaller lamport timestamp will be processed first. If the timestamps are the same, then the request with the smaller process id is processed first.
-The Listener then passes the first request in the queue to the aggregation server.
-The aggregation server passes the first request in the queue and its semaphore to the Handler.
+
+The Listener then passes the first request in the queue to the aggregation server. The aggregation server passes the first request in the queue and its semaphore to the Handler.
+
 The Handler then acquires the semaphore, causing other threads to wait before processing their request. The Handler process requests as follows:
 - If it is a PUT request, it checks if the intermediate .json file contains any data. If yes, then it uploads the data to the server's local database and weather.json file, and deletes the intermediate .json file. Otherwise, it returns a 204 No Content response. 
 It also checks if this is the content server's first connection. If yes, it adds its id to the list of connected content servers and starts a 30 second TimerTask that will delete the content server and its data from the server after 30 seconds. Otherwise, if this is not the content server's first connection, it will cancel its existing TimerTask and create a new one for it.
@@ -40,54 +42,63 @@ The content server (weather station) accepts a url containing the server name an
 It contains a lamport clock and weather entry array that stores each entry in the .txt file.
 
 When it is started, the content server gets a unique process id from the PID_COUNTER.txt file, and initialises its lamport clock with the new process id and a lamport timestamp of 0.
-The content server connects to the aggregation server and parses the text in the .txt file into a weather entry array. 
-It then converts the weather entry array into a JSONObject.
 
-Each time the content server sends a PUT request, it increments its lamport clock time using the tick() method in LamportClock.
+The content server connects to the aggregation server and parses the text in the .txt file into a weather entry array. If the .txt file does not contain any data, or is missing a field, the content server will not parse it and returns an error message.
+
+Each time before the content server sends a PUT request, it increments its lamport clock time using the tick() method in LamportClock.
+
+It then converts the weather entry array into a JSONObject. The JSON object contains the id of the content server, its lamport timestamp, process id, the number of entries, and the weather data.
+
+The content server then creates the PUT request and sends it to the aggregation server through a socket. After it receives the response from the aggregation server, it shut downs.
+
 ### GET Client
+The GET Client accepts a url containing the server name and port number (http://localhost:4567), and a station ID (the station ID of this content server).
+If the station ID is not provided, then an error is returned.
+
+Each time before the content server sends a GET request, it increments its lamport clock time using the tick() method in LamportClock.
+
+It then creates the GET request and sends it to the aggregation server through a socket. When it receives a response from the server, it prints the response.
+Then, it parses the body if there is any, and prints the weather data out as text. After that, it shuts down.
 
 ## Compilation
-1. In the project folder run the instruction below. This will compile the files and create the corresponding `.class` files in the `bin` folder.
+1. In the project folder run the instruction below. This will compile the files and create the corresponding `.class` files.
 ```
-make
-```
-
-2. Navigate to the `bin` folder using the below command. This is where we will start the Java RMI Registry, start the server, and run the client.
-```
-cd bin
+make all
 ```
 
 ## Run the Application
-1. In the `bin` directory, run the instruction below to start Java RMI Registry (for Solaris(tm) Operating System)
+1. Start the aggregation server using the following command
 ```
-rmiregistry &
+java -cp .:java-json.jar:DataUtil:LogUtil:RequestInformation.java:LamportClock.java:Response.java:Listener.java:Handler.java AggregationServer.java 4567
 ```
-or if you're using Windows, run this:
-```
-start rmiregistry 
-```
-The default port the registry runs on is 1099.
+The default port the registry runs on is 4567.
 
-2. Next, start the server using the following command (for Solaris(tm) Operating System)
-```
-java -classpath ./ CalculatorServer &
-```
-or for Windows, run this:
-```
-start java -classpath ./ CalculatorServer
-```
+
 The output should be the following:
 ```
-Server ready
+Aggregation server starting up, listening at port 4567
+You can access http://localhost:4567 now.
+```
+
+2. Next, start the content server using the following command. To run multiple content servers parallelly, run the command below in each terminal for each content server. 
+```
+java -cp .:java-json.jar:LamportClock.java:WeatherEntry.java ContentServer.java http://localhost:4567 [content_server_id] [content_server_txt_file]
+```
+The [content_server_id] should be an integer that represents the content server's id.
+The [content_server_txt_file] should be a .txt file containing the data for that content server. For eg. cs1_1.txt, cs1_2.txt, cs2_1.txt
+An example of starting content server with id 1 using the cs1_1.txt file is:
+```
+java -cp .:java-json.jar:LamportClock.java:WeatherEntry.java ContentServer.java http://localhost:4567 1 cs1_1.txt
 ```
 
 3. Finally, run the client using the command below. To run multiple clients parallelly, run the command below in each terminal for each client. 
 ```
-java  -classpath ./ CalculatorClient
+java -cp .:java-json.jar:LamportClock.java GETClient.java http://localhost:4567 [content_server_id]
 ```
+The [content_server_id] should be an integer that represents the id of the content server the .
 
 ## Testing
-### Setup
+### Automated Testing Setup
 1. The test script is located in the `tests` folder. To run the tests in Visual Studio Code, you will need:
 - JDK (version 1.8 or later)
 - Visual Studio Code (version 1.59.0 or later)
@@ -98,9 +109,19 @@ java  -classpath ./ CalculatorClient
 <img width="1137" alt="Screenshot 2023-08-07 at 2 58 49 pm" src="https://github.com/clariechek/JavaRMI/assets/44283405/37a2d5c7-5e6b-4ee9-9e73-355de496eea7">
 
 ### Running automated tests
-1. Open the project folder and select the test script `CalculatorImplementationTest.java`.
+The automated tests are the following files in the `tests` folder:
+- AggregationServerTest.java
+- ContentServerTest.java
+- DataUtilTest.java
+- GETClientTest.java
+- HandlerTest.java
+- LamportClockTest.java
+- ListenerTest.java
+- RequestInformationTest.java
+- ResponseTest.java
+- WeatherEntryTest.java
 
-2. Click on the testing button on the left sidebar.
+1. Open the project folder and click on the testing button on the left sidebar.
 <img width="1378" alt="Screenshot 2023-08-07 at 3 04 17 pm" src="https://github.com/clariechek/JavaRMI/assets/44283405/27fd4cb0-e693-40f2-b7dd-86ce8e729259">
 
 
@@ -111,8 +132,11 @@ java  -classpath ./ CalculatorClient
 <img width="275" alt="Screenshot 2023-08-07 at 3 05 47 pm" src="https://github.com/clariechek/JavaRMI/assets/44283405/ced2905b-79b0-45cf-a85e-e9506c0ff9f9">
 
 
-5. To run the tests, select the play button next to the JavaRMI title as shown in the video link below. Alternatively, you can run each test individually by clicking the play button next to each test title.
+5. To run the tests, select the play button next to the "distributed_weather_app" title as shown in the video link below. Alternatively, you can run each test individually by clicking the play button next to each test title.
 https://github.com/clariechek/JavaRMI/assets/44283405/0ff80949-5b6b-4d0e-a4d6-f8239762fa63
 
 
 For more information on Java testing in VS Code: https://code.visualstudio.com/docs/java/java-testing
+
+### Running Integrated Tests
+The integrated tests are located in the `tests/integrated_tests` folder. The instructions to run each test is in each file.
