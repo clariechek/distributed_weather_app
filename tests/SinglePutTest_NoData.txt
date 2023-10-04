@@ -1,0 +1,28 @@
+SINGLE PUT TEST - No data
+This test performs 1 PUT request where the there is no data in the local content server file, hence an error is expected to be returned.
+
+- To run the test, ensure that you have compiled the code following the Compilation instructions.
+
+- In the root directory, delete the following files if they exist: 
+(This is because the auto-delete only works when the server shutdowns normally. During testing we may interrupt the server using CTRL-C, hence these files may not be deleted.)
+    - cs#_p#.json files (where # is a number)
+    - LAMPORT_AGGREGATION_SERVER.txt
+    - PID_COUNTER.txt
+    - weather.json
+
+- To start the aggregation server, run the following command in a terminal window:
+java -cp .:java-json.jar:DataUtil:LogUtil:RequestInformation.java:LamportClock.java:Response.java:Listener.java:Handler.java AggregationServer.java 4567
+
+The output should be:
+Aggregation server starting up, listening at port 4567
+You can access http://localhost:4567 now.
+
+- In another terminal, start a content server using the following command.
+java -cp .:java-json.jar:LamportClock.java:WeatherEntry.java ContentServer.java http://localhost:4567 3 cs3_2.txt
+
+The output should be:
+New PID Allocated: 1
+Error: File is empty.
+Error: Invalid content
+
+- Enter CTRL+C to terminate the aggregation server.

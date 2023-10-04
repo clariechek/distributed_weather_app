@@ -1,22 +1,21 @@
-#Directory for compiled classes
-BIN = ./bin/
+# #Directory for compiled classes
+# BIN = ./bin/
 
-# Directory for source files
-SRC = ./src/*
+# # Directory for source files
+# SRC = ./src/*
 
-FLAGS = -g -d $(BIN) -cp .:./lib/java-json.jar:DataUtil.java:LogUtil.java:RequestInformation.java:LamportClock.java:Response.java:Listener.java:Handler.java:WeatherEntry.java $(SRC)
+FLAGS = -g -cp .:java-json.jar:DataUtil.java:LogUtil.java:RequestInformation.java:LamportClock.java:Response.java:Listener.java:Handler.java:WeatherEntry.java
 
 COMPILE = javac $(FLAGS)
 
-JAVA_FILES = $(wildcard $(SRC)*.java)
+JAVA_FILES = $(wildcard ./*.java)
 
 CLASS_FILES = $(JAVA_FILES:.java=.class)
 
-all: clean $(addprefix $(BIN), $(notdir $(CLASS_FILES)))
+all: clean $(addprefix ./, $(notdir $(CLASS_FILES)))
 
-$(BIN)%.class: $(SRC)%.java
-	@mkdir -p $(BIN)
+%.class: %.java
 	$(COMPILE) $<
 
 clean:
-	rm -rf $(BIN)*
+	rm -rf %.class

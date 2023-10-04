@@ -5,25 +5,29 @@ import java.util.concurrent.BlockingQueue;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-        // Ensure request queue is empty.
-        Listener.getListener().clearRequestQueue();
-        System.out.println("Request queue is empty: " + Listener.getListener().getRequestQueue().isEmpty() + "\n");
+        DataUtil.getDataUtil().clearDatabase();
+        LamportClock lamportClock = new LamportClock(0, 0);
+        lamportClock.deleteLamportAndPidFiles();
 
-        // Add request 1 with pid 1 and lamport timestamp 3 to queue.
-        String fullRequest = "PUT /weather.json HTTP/1.1\r\nHost: localhost\r\nUser-Agent: ATOMClient/1/0\r\nContent-Type: application/json\r\nContent-Length: 734\r\n\r\n{\"process_id\":\"1\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"1\",\"lamport_timestamp\":\"3\",\"number_of_entries\":2}";
-        Socket socket = new Socket();
-        RequestInformation request = new RequestInformation(fullRequest, socket, "PUT", "PUT /weather.json HTTP/1.1", "1", "3", "1");
-        Listener.getListener().addRequest(request);
+        // // Ensure request queue is empty.
+        // Listener.getListener().clearRequestQueue();
+        // System.out.println("Request queue is empty: " + Listener.getListener().getRequestQueue().isEmpty() + "\n");
 
-        System.out.println("Main: Request queue remaining capacity: " + Listener.getListener().getRequestQueue().remainingCapacity());
-        // Add request 2 with pid 2 and lamport timestamp 1 to queue.
-        String fullRequest2 = "PUT /weather.json HTTP/1.1\r\nHost: localhost\r\nUser-Agent: ATOMClient/1/0\r\nContent-Type: application/json\r\nContent-Length: 734\r\n\r\n{\"process_id\":\"2\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"2\",\"lamport_timestamp\":\"1\",\"number_of_entries\":2}";
-        Socket socket2 = new Socket();
-        RequestInformation request2 = new RequestInformation(fullRequest2, socket2, "PUT", "PUT /weather.json HTTP/1.1", "1", "1", "2");
-        Listener.getListener().addRequest(request2);
+        // // Add request 1 with pid 1 and lamport timestamp 3 to queue.
+        // String fullRequest = "PUT /weather.json HTTP/1.1\r\nHost: localhost\r\nUser-Agent: ATOMClient/1/0\r\nContent-Type: application/json\r\nContent-Length: 734\r\n\r\n{\"process_id\":\"1\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"1\",\"lamport_timestamp\":\"3\",\"number_of_entries\":2}";
+        // Socket socket = new Socket();
+        // RequestInformation request = new RequestInformation(fullRequest, socket, "PUT", "PUT /weather.json HTTP/1.1", "1", "3", "1");
+        // Listener.getListener().addRequest(request);
+
+        // System.out.println("Main: Request queue remaining capacity: " + Listener.getListener().getRequestQueue().remainingCapacity());
+        // // Add request 2 with pid 2 and lamport timestamp 1 to queue.
+        // String fullRequest2 = "PUT /weather.json HTTP/1.1\r\nHost: localhost\r\nUser-Agent: ATOMClient/1/0\r\nContent-Type: application/json\r\nContent-Length: 734\r\n\r\n{\"process_id\":\"2\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"2\",\"lamport_timestamp\":\"1\",\"number_of_entries\":2}";
+        // Socket socket2 = new Socket();
+        // RequestInformation request2 = new RequestInformation(fullRequest2, socket2, "PUT", "PUT /weather.json HTTP/1.1", "1", "1", "2");
+        // Listener.getListener().addRequest(request2);
         
-        // Check if queue contains request in correct order.
-        BlockingQueue<RequestInformation> output = Listener.getListener().getRequestQueue();
+        // // Check if queue contains request in correct order.
+        // BlockingQueue<RequestInformation> output = Listener.getListener().getRequestQueue();
 
         // DataUtil.getDataUtil().clearDatabase();
         // // Create weather.json file that is in directory when aggregation server crashes

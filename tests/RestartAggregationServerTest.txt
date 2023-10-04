@@ -1,0 +1,118 @@
+RESTART AGGREGATION SERVER TEST
+This test will simulate an aggregation server restarting after a crash.
+After a crash, the server files (LAMPORT_AGGREGATION_SERVER.txt, PID_COUNTER.txt, weather.json and cs#_p#.json files) should still be in the root directory.
+When the aggregation server is restarted, the server files will be used to reinitialise the aggregation server's lamport clock and database.
+This ensures the server does not lose data when it crashes and can continue to run.
+
+
+- To run the test, ensure that you have compiled the code following the Compilation instructions.
+
+- In the root directory, delete the following files if they exist: 
+(This is because the auto-delete only works when the server shutdowns normally. During testing we may interrupt the server using CTRL-C, hence these files may not be deleted.)
+    - cs#_p#.json files (where # is a number)
+    - LAMPORT_AGGREGATION_SERVER.txt
+    - PID_COUNTER.txt
+    - weather.json
+
+- To start the aggregation server, run the following command in a terminal window:
+java -cp .:java-json.jar:DataUtil:LogUtil:RequestInformation.java:LamportClock.java:Response.java:Listener.java:Handler.java AggregationServer.java 4567
+
+The output should be:
+Aggregation server starting up, listening at port 4567
+You can access http://localhost:4567 now.
+
+- In another terminal, start a content server using the following commands.
+java -cp .:java-json.jar:LamportClock.java:WeatherEntry.java ContentServer.java http://localhost:4567 1 cs1_1.txt
+
+followed by:
+java -cp .:java-json.jar:LamportClock.java:WeatherEntry.java ContentServer.java http://localhost:4567 1 cs1_2.txt
+
+The output for the first command should be:
+New PID Allocated: 1
+Connected to localhost on port 4567
+HTTP/1.1 201 Created
+Content-Type: application/json
+Content-Length: 734
+Connnection: close
+
+
+
+{"process_id":"1","data":[{"apparent_t":9.5,"wind_spd_kmh":15,"rel_hum":60,"lon":138.6,"dewpt":5.7,"wind_spd_kt":8,"wind_dir":"S","time_zone":"CST","air_temp":13.3,"cloud":"Partly cloudy","local_date_time_full":"20230715160000","local_date_time":"15/04:00pm","name":"Adelaide (West Terrace /  ngayirdapira)","id":"IDS60901","state":"SA","press":1023.9,"lat":-34.9},{"apparent_t":8.5,"wind_spd_kmh":12,"rel_hum":53,"lon":249.3,"dewpt":2.1,"wind_spd_kt":5,"wind_dir":"S","time_zone":"CST","air_temp":10.2,"cloud":"Sunny","local_date_time_full":"20230715160000","local_date_time":"15/04:00pm","name":"Mount Gambier","id":"IDS60902","state":"SA","press":1693.5,"lat":-23.1}],"station_id":"1","lamport_timestamp":"1","number_of_entries":2}
+
+The output for the second command should be:
+New PID Allocated: 2
+Connected to localhost on port 4567
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 759
+Connnection: close
+
+
+
+{"process_id":"2","data":[{"apparent_t":15,"wind_spd_kmh":15,"rel_hum":60,"lon":138.6,"dewpt":5.7,"wind_spd_kt":8,"wind_dir":"S","time_zone":"CST","air_temp":19,"cloud":"Sunny","local_date_time_full":"20230716170000","local_date_time":"16/05:00pm","name":"Adelaide (West Terrace /  ngayirdapira)","id":"IDS60901","state":" SA","press":1023.9,"lat":-34.9},{"apparent_t":9.5,"wind_spd_kmh":15,"rel_hum":60,"lon":138.6,"dewpt":5.7,"wind_spd_kt":8,"wind_dir":"S","time_zone":"CST","air_temp":13.3,"cloud":"Partly cloudy","local_date_time_full":"20230715160000","local_date_time":"15/04:00pm","name":"Adelaide (West Terrace /  ngayirdapira)","id":"IDS60902","state":" SA","press":1023.9,"lat":-34.9}],"station_id":"1","lamport_timestamp":"1","number_of_entries":2}
+
+- Enter CTRL+C to terminate the aggregation server. This simulates the server crashing.
+
+- Start the aggregation server again, with the following command:
+java -cp .:java-json.jar:DataUtil:LogUtil:RequestInformation.java:LamportClock.java:Response.java:Listener.java:Handler.java AggregationServer.java 4567
+
+The output should be:
+Aggregation server restarted, listening at port 4567
+You can access http://localhost:4567 now.
+
+- The weather.json file should contain:
+[
+    {
+        "process_id": "2",
+        "data": [
+            {
+                "apparent_t": 15,
+                "wind_spd_kmh": 15,
+                "rel_hum": 60,
+                "lon": 138.6,
+                "dewpt": 5.7,
+                "wind_spd_kt": 8,
+                "wind_dir": "S",
+                "time_zone": "CST",
+                "air_temp": 19,
+                "cloud": "Sunny",
+                "local_date_time_full": "20230716170000",
+                "local_date_time": "16/05:00pm",
+                "name": "Adelaide (West Terrace /  ngayirdapira)",
+                "id": "IDS60901",
+                "state": " SA",
+                "press": 1023.9,
+                "lat": -34.9
+            },
+            {
+                "apparent_t": 9.5,
+                "wind_spd_kmh": 15,
+                "rel_hum": 60,
+                "lon": 138.6,
+                "dewpt": 5.7,
+                "wind_spd_kt": 8,
+                "wind_dir": "S",
+                "time_zone": "CST",
+                "air_temp": 13.3,
+                "cloud": "Partly cloudy",
+                "local_date_time_full": "20230715160000",
+                "local_date_time": "15/04:00pm",
+                "name": "Adelaide (West Terrace /  ngayirdapira)",
+                "id": "IDS60902",
+                "state": " SA",
+                "press": 1023.9,
+                "lat": -34.9
+            }
+        ],
+        "station_id": "1",
+        "lamport_timestamp": "1",
+        "number_of_entries": 2
+    }
+]
+
+- The LAMPORT_AGGREGATION_SERVER.txt file should contain:
+Process ID: 0
+Lamport Timestamp: 2
+
+- The PID_COUNTER.txt should contain:
+Current Pid Allocated: 2

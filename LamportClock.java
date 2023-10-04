@@ -51,10 +51,23 @@ public class LamportClock {
      */
     public void deleteLamportAndPidFiles() {
         File file = new File(FILE_SERVER_LAMPORT);
-        file.deleteOnExit();
+        if (file.exists()) {
+            LogUtil.write("Deleting " + FILE_SERVER_LAMPORT + "...");
+            file.delete();
+            LogUtil.write(FILE_SERVER_LAMPORT+ " deleted.");
+
+        } else {
+            LogUtil.write("No " + FILE_SERVER_LAMPORT + " file to delete.");
+        }
 
         File pidFile = new File(FILE_PID);
-        pidFile.deleteOnExit();
+        if (pidFile.exists()) {
+            LogUtil.write("Deleting " + FILE_PID + "...");
+            pidFile.delete();
+            LogUtil.write(FILE_PID + " deleted.");
+        } else {
+            LogUtil.write("No " + FILE_PID + " file to delete.");
+        }
     }
 
     /*
@@ -107,16 +120,26 @@ public class LamportClock {
      * be retrieved from this file.
      */
     public void initialiseLamportFile() {
+        FileWriter fw = null;
         try {
             File file = new File(FILE_SERVER_LAMPORT);
             if (!file.exists()) {
                 file.createNewFile();
             }
-            FileWriter fw = new FileWriter(FILE_SERVER_LAMPORT);
+            fw = new FileWriter(FILE_SERVER_LAMPORT);
             fw.write("Process ID: 0\nLamport Timestamp: 0");
+            fw.flush();
             fw.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (fw != null) {
+                try { 
+                    fw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -125,16 +148,26 @@ public class LamportClock {
      * content server and GETClient instance is allocated a unique pid.
      */
     public void initialisePidFile() {
+        FileWriter fw = null;
         try {
             File file = new File(FILE_PID);
             if (!file.exists()) {
                 file.createNewFile();
             }
-            FileWriter fw = new FileWriter(FILE_PID);
+            fw = new FileWriter(FILE_PID);
             fw.write("Current Pid Allocated: 0");
+            fw.flush();
             fw.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (fw != null) {
+                try { 
+                    fw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -147,11 +180,12 @@ public class LamportClock {
         int pid = 0;
         int time = 0;
         int[] result = new int[2];
+        BufferedReader br = null;
         try {
             File file = new File(FILE_SERVER_LAMPORT);
             if (file.exists()) {
                 FileReader fileReader = new FileReader(file);
-                BufferedReader br = new BufferedReader(fileReader);
+                br = new BufferedReader(fileReader);
                 String line;
                 while ((line = br.readLine()) != null) {
                     if (line.contains("Process ID:")) {
@@ -168,6 +202,14 @@ public class LamportClock {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try { 
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return null;
     }
@@ -176,16 +218,26 @@ public class LamportClock {
      * Updates the LAMPORT_AGGREGATION_SERVER.txt file with the new lamport clock data.
      */
     public void updateLamportFile(int newTimestamp) {
+        FileWriter fw = null;
         try {
             File file = new File(FILE_SERVER_LAMPORT);
             if (!file.exists()) {
                 file.createNewFile();
             }
-            FileWriter fw = new FileWriter(FILE_SERVER_LAMPORT);
+            fw = new FileWriter(FILE_SERVER_LAMPORT);
             fw.write("Process ID: " + this.processId + "\nLamport Timestamp: " + newTimestamp);
+            fw.flush();
             fw.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (fw != null) {
+                try { 
+                    fw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -202,11 +254,13 @@ public class LamportClock {
      */
     public static int getNewPid() {
         int newPid = -1;
+        BufferedReader br = null;
+        FileWriter fw = null;
         try {
             File file = new File(FILE_PID);
             if (file.exists()) {
                 FileReader fileReader = new FileReader(file);
-                BufferedReader br = new BufferedReader(fileReader);
+                br = new BufferedReader(fileReader);
                 String line;
                 while ((line = br.readLine()) != null) {
                     if (line.contains("Current Pid Allocated:")) {
@@ -217,8 +271,9 @@ public class LamportClock {
                 }
                 br.close();
 
-                FileWriter fw = new FileWriter(FILE_PID);
+                fw = new FileWriter(FILE_PID);
                 fw.write("Current Pid Allocated: " + newPid);
+                fw.flush();
                 fw.close();
 
                 System.out.println("New PID Allocated: " + newPid);
@@ -226,6 +281,22 @@ public class LamportClock {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return newPid;
     }

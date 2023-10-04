@@ -1,0 +1,48 @@
+SINGLE GET TEST - No data
+This test performs a single GET request on an empty database. Hence, a 404 Not Found response code is returned.
+
+- To run the test, ensure that you have compiled the code following the Compilation instructions.
+
+- In the root directory, delete the following files if they exist: 
+(This is because the auto-delete only works when the server shutdowns normally. During testing we may interrupt the server using CTRL-C, hence these files may not be deleted.)
+    - cs#_p#.json files (where # is a number)
+    - LAMPORT_AGGREGATION_SERVER.txt
+    - PID_COUNTER.txt
+    - weather.json
+
+- To start the aggregation server, run the following command in a terminal window:
+java -cp .:java-json.jar:DataUtil:LogUtil:RequestInformation.java:LamportClock.java:Response.java:Listener.java:Handler.java AggregationServer.java 4567
+
+The output should be:
+Aggregation server starting up, listening at port 4567
+You can access http://localhost:4567 now.
+
+- In another terminal, start the GETClient using the following command:
+java -cp .:java-json.jar:LamportClock.java GETClient.java http://localhost:4567 1
+
+The output should be:
+New PID Allocated: 1
+Connected to localhost on port 4567
+HTTP/1.1 404 Not Found
+Is content length 0: true
+Content-Length: 0
+Connnection: close
+
+
+
+Data for station ID 1 is not found in database.
+
+- Enter CTRL+C to terminate the aggregation server.
+
+The aggregation server output should be:
+GET / HTTP/1.1
+Host: localhost
+Accept: application/json
+StationID: 1
+LamportTimestamp: 1
+ProcessID: 1
+
+1970-01-01 09:30:00 GET request: GET / HTTP/1.1
+1970-01-01 09:30:00 New request from GETClient with process ID 1 added to queue.
+1970-01-01 09:30:00 Processing request from GETClient with process ID 1...
+1970-01-01 09:30:00 404(Not Found): GET / HTTP/1.1

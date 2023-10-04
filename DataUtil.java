@@ -102,18 +102,17 @@ public class DataUtil {
         }
         putHistory.add(id);
         LogUtil.write("Added content server " + id + " to connected content servers list.");
-
-        // connectedContentServers.add(id);
-        TimerTask scheduleDelete = null;
-        // Create a timer that will remove the content server from the connected content servers list after 30 seconds and its data from the database.
-        timer.schedule(scheduleDelete = new TimerTask() {
+        TimerTask scheduleDelete = new TimerTask() {
             @Override
             public void run() {
                 deleteContentServer(id);
             }
-        }, 30000);
-        connectedContentServers.put(id,scheduleDelete);
-        // connectedContentServers.put(id, timer);
+        };
+        // Create a timer that will remove the content server from the connected content servers list after 30 seconds and its data from the database.
+        if (scheduleDelete != null) {
+            timer.schedule(scheduleDelete , time_out_in_milliseconds);
+            connectedContentServers.put(id,scheduleDelete);
+        }
     }
 
     /*
@@ -121,26 +120,19 @@ public class DataUtil {
      */
     public void restartContentServerTimer(int id) {
         TimerTask oldScheduleDelete = connectedContentServers.get(id);
-        oldScheduleDelete.cancel();
-        TimerTask newScheduleDelete = null;
-        timer.schedule(newScheduleDelete = new TimerTask() {
+        if (oldScheduleDelete != null) {
+            oldScheduleDelete.cancel();
+        }
+        TimerTask newScheduleDelete = new TimerTask() {
             @Override
             public void run() {
                 deleteContentServer(id);
             }
-        }, 30000);
-        connectedContentServers.put(id,newScheduleDelete);
-        // Timer timer = connectedContentServers.get(id);
-        // timer.cancel();
-        // timer.purge();
-        // timer = new Timer(Integer.toString(id));
-        // timer.scheduleAtFixedRate(new TimerTask() {
-        //     @Override
-        //     public void run() {
-        //         deleteContentServer(id);
-        //     }
-        // }, 30000, 30000);
-        // connectedContentServers.put(id, timer);
+        };
+        if (newScheduleDelete != null) {
+            timer.schedule(newScheduleDelete , time_out_in_milliseconds);
+            connectedContentServers.put(id,newScheduleDelete);
+        }
     }
 
     /*
@@ -150,30 +142,37 @@ public class DataUtil {
     public void deleteContentServer(int id) {
         // Remove the content server with id from the connected content servers
         TimerTask scheduledDelete = connectedContentServers.get(id);
-        scheduledDelete.cancel();
+        if (scheduledDelete != null) {
+            scheduledDelete.cancel();
+        }
         connectedContentServers.remove(id);
         LogUtil.write("Content server " + id + " expired. Deleting content server...");
-        // connectedContentServers.remove(id);
-        // // // Remove content server from connected content servers list
-        // // Timer timer = connectedContentServers.get(id);
-        // // timer.purge();
-        // // timer.cancel();
-        // // connectedContentServers.remove(id);
+
         // Remove data from database
         if (database.containsKey(id)) {
             database.remove(id);
         }
         // Update database file contents
+        FileWriter fileWriter = null;
         try {
             File file = new File(FILE_DATA);
             if (file.exists()) {
-                FileWriter fileWriter = new FileWriter(FILE_DATA);
+                fileWriter = new FileWriter(FILE_DATA);
                 String newData = getAllDataFromDatabase();
                 fileWriter.write(newData);
+                fileWriter.flush();
                 fileWriter.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (fileWriter != null) {
+                try { 
+                    fileWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -301,22 +300,23 @@ public class DataUtil {
         }
 
         if (!connectedContentServers.isEmpty()) {
+            for (TimerTask timer : connectedContentServers.values()) {
+                timer.cancel();
+            }
+            this.timer.cancel();
             connectedContentServers.clear();
         }
 
-        // if (!connectedContentServers.isEmpty()) {
-        //     for (Timer timer : connectedContentServers.values()) {
-        //         timer.cancel();
-        //         timer.purge();
-        //     }
-
-        //     connectedContentServers.clear();
-        // }
-
         File file = new File(FILE_DATA);
         if (file.exists()) {
-            file.deleteOnExit();
-            LogUtil.write(FILE_DATA + " deleted.");
+            try {
+                LogUtil.write("Deleting " + FILE_DATA + "...");
+            } finally {
+                file.delete();
+                LogUtil.write(FILE_DATA + " deleted.");
+            }
+        } else {
+            LogUtil.write("No " + FILE_DATA + " to delete.");
         }
     }
 }

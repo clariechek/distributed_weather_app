@@ -198,6 +198,10 @@ public class AggregationServer extends Thread {
                 }
                 // Call Listener and Handler
                 if (fullRequest != null && !fullRequest.equals("")) {
+                    // Tick aggregation server lamport clock when request received and save to file.
+                    lamportClock.tick();
+                    lamportClock.updateLamportFile(lamportClock.getLamportTimestamp());
+
                     // Add request to queue
                     Listener.getListener().addRequestToQueue(requestInformation);
                     // Handle request
@@ -218,159 +222,14 @@ public class AggregationServer extends Thread {
     public static void main(String[] args) {
         AggregationServer aggregationServer = new AggregationServer();
         aggregationServer.startServer(args);
-        // Automatically shutdown in 5 minutes
+        // Automatically shutdown in 2 minutes
         try {
-            Thread.sleep(300000);
+            Thread.sleep(120000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         aggregationServer.stopServer();
     }
-
-    // public static void main(String[] args) {
-    //     LogUtil.clear();
-    //     LamportClock lamportClock = LamportClock.initialiseAggregationServerClock();
-    //     // Default port number
-    //     int port = 4567;
-    //     // Store request headers and body if available
-    //     RequestInformation requestInformation = null;
-    //     // Create semaphore so only one thread can access the database at a time.
-    //     Semaphore semaphore = new Semaphore(1);
-    //     // Reference to client socket
-    //     Socket socket;
-    //     try {
-    //         // Create a new instance of the server
-    //         ServerSocket serverSocket = new ServerSocket(port);
-    //         System.out.println("Aggregation server starting up, listening at port " + port);
-    //         System.out.println("You can access http://localhost:4567 now.");
-    //         while (true) {
-    //             socket = serverSocket.accept();
-    //             // Local reader from the client
-    //             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    //             // Parse request headers
-    //             String line, fullRequest = "", getStationID = "", getLamportTimestamp = "", getProcessID = "";
-    //             boolean getReq = false, putReq = false;
-    //             int content_length = 0;
-    //             while ((line = in.readLine()) != null) {
-    //                 System.out.println(line);
-    //                 if (line.contains("GET")) {
-    //                     // Get request
-    //                     getReq = true;
-    //                     fullRequest += line;
-    //                     continue;
-    //                 } else if (line.contains("PUT")) {
-    //                     // Put request
-    //                     putReq = true;
-    //                     fullRequest += line;
-    //                     fullRequest += "\r\n";
-    //                     continue;
-    //                 }
-    //                 if (!putReq && !getReq) {
-    //                     // Invalid request
-    //                     Response response = new Response("Bad Request", "400", "0", "", line, "Invalid request type.", socket, true);
-    //                     response.sendResponse();
-    //                     in.close();
-    //                     break;
-    //                 } else if (putReq) {
-    //                     if (line.contains("Content-Length:")) {
-    //                         // End of put request headers
-    //                         fullRequest += line;
-    //                         String s = line.substring("Content-Length:".length()).trim();
-    //                         content_length = Integer.parseInt(s) + 13;
-    //                         break;
-    //                     } else {
-    //                         // Continue reading headers
-    //                         fullRequest += line;
-    //                         fullRequest += "\r\n";
-    //                     }
-    //                 } else {
-    //                     if (line.equals("")) {
-    //                         // End of get request
-    //                         fullRequest += line;
-    //                         break;
-    //                     } else if (line.contains("StationID:")) {
-    //                         // Get station ID
-    //                         getStationID = line.substring("StationID:".length()).trim();
-    //                         fullRequest += line;
-    //                         fullRequest += "\r\n";
-    //                     } else if (line.contains("LamportTimestamp:")) {
-    //                         // Get lamport timestamp
-    //                         getLamportTimestamp = line.substring("LamportTimestamp:".length()).trim();
-    //                         fullRequest += line;
-    //                         fullRequest += "\r\n";
-    //                     } else if (line.contains("ProcessID:")) {
-    //                         // Get process ID
-    //                         getProcessID = line.substring("ProcessID:".length()).trim();
-    //                         fullRequest += line;
-    //                         fullRequest += "\r\n";
-    //                     } else {
-    //                         // Continue reading headers
-    //                         fullRequest += line;
-    //                         fullRequest += "\r\n";
-    //                     }
-    //                 }
-    //             }
-    //             // Read PUT request body
-    //             if (putReq) {
-    //                 char[] body = new char[content_length];
-    //                 in.read(body, 0, content_length);
-    //                 fullRequest += new String(body);
-    //                 String req = fullRequest.substring(4, fullRequest.length()-9).trim();
-    //                 req = URLDecoder.decode(req, "UTF-8");
-    //                 if (req.endsWith("/")) {
-    //                     req = req.substring(0, req.length() - 1);
-    //                 }
-    //                 LogUtil.write("PUT request" + req);
-    //                 // Parse PUT request body into JSON object
-    //                 String[] parsedRequest = parsePutRequest(fullRequest);
-    //                 String content = parsedRequest[2];
-    //                 JSONObject json;
-    //                 try {
-    //                     json = new JSONObject(content.toString());               
-    //                     // Save JSON object to intermediate file to process later.
-    //                     saveJsonToIntermediateFile(json);                
-    //                     // Create Request Information object.
-    //                     requestInformation = new RequestInformation(fullRequest, socket, "PUT", req, json.get("station_id").toString(), json.get("lamport_timestamp").toString(), json.get("process_id").toString());
-    //                 } catch (JSONException e) {
-    //                     e.printStackTrace();
-    //                 }
-    //             } else if (getReq) {
-    //                 if (getStationID == "" || getLamportTimestamp == "" || getProcessID == "") {
-    //                     // Normal GET
-    //                     String req = fullRequest.substring(4, fullRequest.length()-9).trim();
-    //                     req = URLDecoder.decode(req, "UTF-8");
-    //                     if (req.endsWith("/")) {
-    //                         req = req.substring(0, req.length() - 1);
-    //                     }
-    //                     LogUtil.write("GET request: " + req);
-    //                     requestInformation = new RequestInformation(fullRequest, socket, "GET", req, null, null, null);
-    //                 } else {
-    //                     // GET from GETClient
-    //                     LogUtil.write("GET request: GET / HTTP/1.1");
-    //                     requestInformation = new RequestInformation(fullRequest, socket, "GET", "GET / HTTP/1.1", getStationID, getLamportTimestamp, getProcessID);
-    //                 }
-    //             }
-    //             // Call Listener and Handler
-    //             if (fullRequest != null && !fullRequest.equals("")) {
-    //                 // Add request to queue
-    //                 Listener.getListener().addRequestToQueue(requestInformation);
-    //                 // Handle request
-    //                 RequestInformation req = Listener.getListener().handleRequest();
-    //                 // System.out.println("Request Information: " + req.getRequestStartLine());
-    //                 Handler handler = new Handler(req, semaphore);
-    //                 handler.run();
-    //             }
-    //             in.close();
-    //         }   
-    //     } catch (Exception e) {
-    //         System.out.println("Error: " + e.getMessage());
-    //     } finally {
-    //         // If server did not crash, clear the lamport clock file and database.
-    //         lamportClock.deleteLamportAndPidFiles();
-    //         DataUtil.getDataUtil().clearDatabase();
-    //         System.out.println("Aggregation Server has been shutdown.");
-    //     } 
-    // }
 
     /*
      * Parses PUT request into three parts: start line, header, and body.
