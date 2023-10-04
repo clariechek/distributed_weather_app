@@ -198,8 +198,9 @@ public class AggregationServer extends Thread {
                 }
                 // Call Listener and Handler
                 if (fullRequest != null && !fullRequest.equals("")) {
-                    // Tick aggregation server lamport clock when request received and save to file.
+                    // Tick aggregation server lamport clock when request received, and synchronise it with the lamport time the request was sent. Then save lamport details to file.
                     lamportClock.tick();
+                    lamportClock.syncLamportTimestamp(Integer.parseInt(requestInformation.getLamportTimestamp()));
                     lamportClock.updateLamportFile(lamportClock.getLamportTimestamp());
 
                     // Add request to queue

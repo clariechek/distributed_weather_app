@@ -43,8 +43,12 @@ public class Handler implements Runnable {
         
         if (req.getRequestType().equals("PUT")) {
             processPutRequest(req, startLine, socket);    
-        } else {
+        } else if (req.getRequestType().equals("GET")){
             processGetRequest(req, startLine, socket);
+        } else {
+            // Invalid request type. Return 400 Bad Request response.
+            response = new Response("Bad Request", "400", "0", "", startLine, "Invalid request type.", socket, true);
+            response.sendResponse();
         }
     }
 
