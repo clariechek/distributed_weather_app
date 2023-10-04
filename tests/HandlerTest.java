@@ -74,9 +74,10 @@ public class HandlerTest {
         Handler handler = new Handler(request, sem);
         handler.processPutRequest(request, "PUT /weather.json HTTP/1.1", socket);
         String output = outputStreamCaptor.toString();
-        String expectedOutput = "1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 Added content server 1 to connected content servers list.\n1970-01-01 09:30:00 Added new JSON data to database...\n1970-01-01 09:30:00 Database size: 1\n1970-01-01 09:30:00 Database contents for id 1: {\"process_id\":\"1\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"1\",\"lamport_timestamp\":\"1\",\"number_of_entries\":2}\n1970-01-01 09:30:00 weather.json is EMPTY. Adding new data...\n1970-01-01 09:30:00 200(OK): PUT /weather.json HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
+        String expectedOutput = "1970-01-01 09:30:00 Deleting weather.json...\n1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 Added content server 1 to connected content servers list.\n1970-01-01 09:30:00 Added new JSON data to database...\n1970-01-01 09:30:00 Database size: 1\n1970-01-01 09:30:00 Database contents for id 1: {\"process_id\":\"1\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"1\",\"lamport_timestamp\":\"1\",\"number_of_entries\":2}\n1970-01-01 09:30:00 Created new weather.json file\n1970-01-01 09:30:00 weather.json is EMPTY. Adding new data...\n1970-01-01 09:30:00 200(OK): PUT /weather.json HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
         assertEquals(expectedOutput, output);
     }
+    
     
     @Test
     @DisplayName("Process Put Request Test - 201 Created")
@@ -117,7 +118,7 @@ public class HandlerTest {
         Handler handler = new Handler(request, sem);
         handler.processPutRequest(request, "PUT /weather.json HTTP/1.1", socket);
         String output = outputStreamCaptor.toString();
-        String expectedOutput = "1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 Added new JSON data to database...\n1970-01-01 09:30:00 Database size: 1\n1970-01-01 09:30:00 Database contents for id 1: {\"process_id\":\"1\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"1\",\"lamport_timestamp\":\"1\",\"number_of_entries\":2}\n1970-01-01 09:30:00 weather.json is EMPTY. Adding new data...\n1970-01-01 09:30:00 Added content server 1 to connected content servers list.\n1970-01-01 09:30:00 201(Created): PUT /weather.json HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
+        String expectedOutput = "1970-01-01 09:30:00 Deleting weather.json...\n1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 Added new JSON data to database...\n1970-01-01 09:30:00 Database size: 1\n1970-01-01 09:30:00 Database contents for id 1: {\"process_id\":\"1\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"1\",\"lamport_timestamp\":\"1\",\"number_of_entries\":2}\n1970-01-01 09:30:00 Created new weather.json file\n1970-01-01 09:30:00 weather.json is EMPTY. Adding new data...\n1970-01-01 09:30:00 Added content server 1 to connected content servers list.\n1970-01-01 09:30:00 201(Created): PUT /weather.json HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
         assertEquals(expectedOutput, output);
     }
 
@@ -155,7 +156,7 @@ public class HandlerTest {
         Handler handler = new Handler(request, sem);
         handler.processPutRequest(request, "PUT /weather.json HTTP/1.1", socket);
         String output = outputStreamCaptor.toString();
-        String expectedOutput = "1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 204(No Content): PUT /weather.json HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
+        String expectedOutput = "1970-01-01 09:30:00 Deleting weather.json...\n1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 204(No Content): PUT /weather.json HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
         assertEquals(expectedOutput, output);
     }
 
@@ -198,7 +199,7 @@ public class HandlerTest {
         Handler handler = new Handler(request, sem);
         handler.processPutRequest(request, "PUT /weather.json HTTP/1.1", socket);
         String output = outputStreamCaptor.toString();
-        String expectedOutput = "1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 500(Internal Server Error): PUT /weather.json HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
+        String expectedOutput = "1970-01-01 09:30:00 Deleting weather.json...\n1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 500(Internal Server Error): PUT /weather.json HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
         assertEquals(expectedOutput, output);
     }
 
@@ -233,7 +234,7 @@ public class HandlerTest {
         Handler handler = new Handler(request, sem);
         handler.processPutRequest(request, "PUT /weather.json HTTP/1.1", socket);
         String output = outputStreamCaptor.toString();
-        String expectedOutput = "1970-01-01 09:30:00 weather.json deleted.\n";
+        String expectedOutput = "1970-01-01 09:30:00 Deleting weather.json...\n1970-01-01 09:30:00 weather.json deleted.\n";
         assertEquals(expectedOutput, output);
     }
 
@@ -265,7 +266,7 @@ public class HandlerTest {
         Handler handler = new Handler(request, sem);
         handler.processGetRequest(request, "GET / HTTP/1.1", socket);
         String output = outputStreamCaptor.toString();
-        String expectedOutput = "1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 Added new JSON data to database...\n1970-01-01 09:30:00 Database size: 1\n1970-01-01 09:30:00 Database contents for id 1: {\"process_id\":\"1\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"1\",\"lamport_timestamp\":\"1\",\"number_of_entries\":2}\n1970-01-01 09:30:00 weather.json is EMPTY. Adding new data...\n1970-01-01 09:30:00 200(OK): GET / HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
+        String expectedOutput = "1970-01-01 09:30:00 Deleting weather.json...\n1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 Added new JSON data to database...\n1970-01-01 09:30:00 Database size: 1\n1970-01-01 09:30:00 Database contents for id 1: {\"process_id\":\"1\",\"data\":[{\"apparent_t\":9.5,\"wind_spd_kmh\":15,\"rel_hum\":60,\"lon\":138.6,\"dewpt\":5.7,\"wind_spd_kt\":8,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":13.3,\"cloud\":\"Partly cloudy\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Adelaide (West Terrace /  ngayirdapira)\",\"id\":\"IDS60901\",\"state\":\"SA\",\"press\":1023.9,\"lat\":-34.9},{\"apparent_t\":8.5,\"wind_spd_kmh\":12,\"rel_hum\":53,\"lon\":249.3,\"dewpt\":2.1,\"wind_spd_kt\":5,\"wind_dir\":\"S\",\"time_zone\":\"CST\",\"air_temp\":10.2,\"cloud\":\"Sunny\",\"local_date_time_full\":\"20230715160000\",\"local_date_time\":\"15/04:00pm\",\"name\":\"Mount Gambier\",\"id\":\"IDS60902\",\"state\":\"SA\",\"press\":1693.5,\"lat\":-23.1}],\"station_id\":\"1\",\"lamport_timestamp\":\"1\",\"number_of_entries\":2}\n1970-01-01 09:30:00 Created new weather.json file\n1970-01-01 09:30:00 weather.json is EMPTY. Adding new data...\n1970-01-01 09:30:00 200(OK): GET / HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
         assertEquals(expectedOutput, output);
     }
 
@@ -294,7 +295,7 @@ public class HandlerTest {
         Handler handler = new Handler(request, sem);
         handler.processGetRequest(request, "GET / HTTP/1.1", socket);
         String output = outputStreamCaptor.toString();
-        String expectedOutput = "1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 404(Not Found): GET / HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
+        String expectedOutput = "1970-01-01 09:30:00 Deleting weather.json...\n1970-01-01 09:30:00 weather.json deleted.\n1970-01-01 09:30:00 404(Not Found): GET / HTTP/1.1\n1970-01-01 09:30:00 Error sending response: Socket is not connected\n";
         assertEquals(expectedOutput, output);
     }
     

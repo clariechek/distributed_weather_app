@@ -220,8 +220,7 @@ public class LamportClockTest {
         fileWriter.close();
 
         // Get new PID and check if it is correct.
-        LamportClock lamportClock = new LamportClock(0,0);
-        int output = lamportClock.getNewPid();
+        int output = LamportClock.getNewPid();
         int expectedOutput = 30;
         assertEquals(expectedOutput, output);
     }

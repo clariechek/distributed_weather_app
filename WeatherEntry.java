@@ -1,6 +1,3 @@
-
-import java.util.Objects;
-
 public class WeatherEntry {
     private String id;
     private String name;

@@ -107,10 +107,8 @@ public class DataUtil {
             }
         };
         // Create a timer that will remove the content server from the connected content servers list after 30 seconds and its data from the database.
-        if (scheduleDelete != null) {
-            timer.schedule(scheduleDelete , time_out_in_milliseconds);
-            connectedContentServers.put(id,scheduleDelete);
-        }
+        timer.schedule(scheduleDelete , time_out_in_milliseconds);
+        connectedContentServers.put(id,scheduleDelete);
     }
 
     /*
@@ -118,19 +116,16 @@ public class DataUtil {
      */
     public void restartContentServerTimer(int id) {
         TimerTask oldScheduleDelete = connectedContentServers.get(id);
-        if (oldScheduleDelete != null) {
-            oldScheduleDelete.cancel();
-        }
+        oldScheduleDelete.cancel();
+    
         TimerTask newScheduleDelete = new TimerTask() {
             @Override
             public void run() {
                 deleteContentServer(id);
             }
         };
-        if (newScheduleDelete != null) {
-            timer.schedule(newScheduleDelete , time_out_in_milliseconds);
-            connectedContentServers.put(id,newScheduleDelete);
-        }
+        timer.schedule(newScheduleDelete , time_out_in_milliseconds);
+        connectedContentServers.put(id,newScheduleDelete);
     }
 
     /*
@@ -140,9 +135,8 @@ public class DataUtil {
     public void deleteContentServer(int id) {
         // Remove the content server with id from the connected content servers
         TimerTask scheduledDelete = connectedContentServers.get(id);
-        if (scheduledDelete != null) {
-            scheduledDelete.cancel();
-        }
+        scheduledDelete.cancel();
+        
         connectedContentServers.remove(id);
         LogUtil.write("Content server " + id + " expired. Deleting content server...");
 
