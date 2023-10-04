@@ -3,12 +3,14 @@ This test performs 1 PUT request where the data from the content server is missi
 
 - To run the test, ensure that you have compiled the code following the Compilation instructions.
 
-- In the root directory, delete the following files if they exist: 
-(This is because the auto-delete only works when the server shutdowns normally. During testing we may interrupt the server using CTRL-C, hence these files may not be deleted.)
+- In the project root directory, run the main method in DeleteFiles.java. Then delete any cs#_p#.json files (where # is a number).
+This will delete the following files:
     - cs#_p#.json files (where # is a number)
     - LAMPORT_AGGREGATION_SERVER.txt
     - PID_COUNTER.txt
     - weather.json
+This is because the auto-delete only works when the server shutdowns normally. During testing we may interrupt the server using CTRL+C, hence these files may not be deleted.
+
 
 - To start the aggregation server, run the following command in a terminal window:
 java -cp .:java-json.jar:DataUtil:LogUtil:RequestInformation.java:LamportClock.java:Response.java:Listener.java:Handler.java AggregationServer.java 4567

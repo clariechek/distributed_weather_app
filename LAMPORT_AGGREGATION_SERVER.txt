@@ -1,2 +1,0 @@
-Process ID: 0
-Lamport Timestamp: 4
