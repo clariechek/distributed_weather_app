@@ -36,7 +36,11 @@ public class GETClient {
             System.out.println("Exception: " + e.getMessage());
         }
 
-        // Get station ID
+        // Get station ID. If not provided, then return error.
+        if (args.length != 2) {
+            System.out.println("Usage: java GETClient <server URI> <station ID>");
+            System.exit(1);
+        }
         String stationID = args[1];
         
         // Create a new server socket
