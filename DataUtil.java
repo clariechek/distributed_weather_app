@@ -19,10 +19,8 @@ public class DataUtil {
     private static final String FILE_DATA = "weather.json";
     private static final DataUtil dataUtilInstance = new DataUtil();
     private static LinkedList<Integer> putHistory = new LinkedList<Integer>();
-    // private static HashMap<Integer, Timer> connectedContentServers = new HashMap<Integer, Timer>();
     Timer timer = new Timer();
     long time_out_in_milliseconds = 30000;
-    // private static LinkedList<Integer> connectedContentServers = new LinkedList<Integer>();
     private static HashMap<Integer, TimerTask> connectedContentServers = new HashMap<Integer, TimerTask>();
     private static HashMap<Integer, JSONObject> database = new HashMap<Integer, JSONObject>();
     
@@ -195,10 +193,6 @@ public class DataUtil {
         for (int key : database.keySet()) {
             dataArray.put(database.get(key));
         }
-        // for (int i = 0; i < database.size(); i++) {
-        //     LogUtil.write(database.get(i).toString());
-        //     dataArray.put(database.get(i));
-        // }
         return dataArray.toString();
     }
 

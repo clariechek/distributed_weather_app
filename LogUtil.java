@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,7 +27,6 @@ public class LogUtil {
      * @param print, print to screen
      */
     public static void write(String log, boolean print) {
-        // LocalDateTime date = LocalDateTime.now();
         String message = sdf.format(new Date(0)) + " " + log;
         // Store new log
         logs.add(message);

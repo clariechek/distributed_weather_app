@@ -204,9 +204,9 @@ public class AggregationServer extends Thread {
 
                     // Add request to queue
                     Listener.getListener().addRequestToQueue(requestInformation);
+
                     // Handle request
                     RequestInformation req = Listener.getListener().handleRequest();
-                    // System.out.println("Request Information: " + req.getRequestStartLine());
                     Handler handler = new Handler(req, semaphore);
                     handler.run();
                 }
@@ -243,7 +243,6 @@ public class AggregationServer extends Thread {
 
         
         for (int i=1; i<lines.length; i++) {
-            // System.out.println(lines[i]);
             if (lines[i].contains("Content-Length")) {
                 header += lines[i];
                 isBody = true;
@@ -283,7 +282,6 @@ public class AggregationServer extends Thread {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
-        } 
-        // return filename;
+        }
     } 
 }

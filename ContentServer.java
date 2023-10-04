@@ -103,67 +103,6 @@ public class ContentServer extends Thread {
         contentServer.stopServer();
     }
 
-    // public static void main(String[] args) {
-    //     ContentServer contentServer = new ContentServer();
-    //     URI uri;
-    //     String serverName = "localhost";
-    //     int port = 4567;
-    //     // Initialise lamport clock
-    //     int process_id = LamportClock.getNewPid();
-    //     LamportClock lamportClock = new LamportClock(process_id, 0);
-    //     // Get server information
-    //     try {
-    //         uri = new URI(args[0]);
-    //         serverName = uri.getHost();
-    //         if (uri.getPort() != -1) {
-    //             port = 4567;
-    //         } else {
-    //             port = uri.getPort();
-    //         }
-    //     } catch (URISyntaxException e) {
-    //         System.out.println("Invalid URI");
-    //         System.exit(1);
-    //     } catch (Exception e) {
-    //         System.out.println("Exception: " + e.getMessage());
-    //     }
-    //     // Get station ID
-    //     String stationID = args[1];
-    //     // Parse file and get content
-    //     WeatherEntry[] content = contentServer.loadContent(args[2], contentServer);
-    //     if (content == null) {
-    //         System.out.println("Error: No content found");
-    //         System.exit(1);
-    //     } 
-    //     // Create a new server socket
-    //     try (
-    //         Socket socket = new Socket(serverName, port);
-    //         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-    //         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-    //     ) {
-    //         System.out.println("Connected to " + serverName + " on port " + port);
-    //         // Increment lamport clock
-    //         lamportClock.tick();
-    //         // Convert content to JSON format
-    //         JSONObject json = contentServer.convertToJSON(content, stationID, Integer.toString(lamportClock.getLamportTimestamp()), Integer.toString(lamportClock.getProcessId()));
-    //         // Send PUT Request
-    //         String requestHeader = contentServer.buildRequestHeader("PUT", "/weather.json", serverName, "application/json", Integer.toString((json.toString()).length()));
-    //         String requestBody = json.toString();
-    //         out.write(requestHeader);
-    //         out.write(requestBody);
-    //         out.flush();
-    //         String serverResponse;
-    //         while ((serverResponse = in.readLine()) != null) {
-    //             System.out.println(serverResponse);
-    //         }
-    //         // Close connection
-    //         out.close();
-    //         in.close();
-    //         socket.close();
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-
     /*
      * Return String representation of HTTP PUT request header
      */
